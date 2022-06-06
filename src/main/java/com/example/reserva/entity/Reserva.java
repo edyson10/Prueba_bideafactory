@@ -1,17 +1,14 @@
 package com.example.reserva.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Entity
+@Table(name = "book")
 public class Reserva {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String name;
     private String lastname;
     private int age;
@@ -23,7 +20,7 @@ public class Reserva {
 
     public Reserva() { }
 
-    public Reserva(Long id, String name, String lastname, int age, String phoneNumber, Date startDate,
+    public Reserva(String id, String name, String lastname, int age, String phoneNumber, Date startDate,
                    Date endDate, String houseId, String discountCode) {
         this.id = id;
         this.name = name;
@@ -36,11 +33,11 @@ public class Reserva {
         this.discountCode = discountCode;
     }
 
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

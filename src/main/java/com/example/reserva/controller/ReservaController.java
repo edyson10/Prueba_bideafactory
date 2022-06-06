@@ -1,9 +1,11 @@
 package com.example.reserva.controller;
 
+import com.example.reserva.DTO.Mensaje;
 import com.example.reserva.entity.Reserva;
 import com.example.reserva.service.ReserveService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,7 +19,7 @@ public class ReservaController {
     @Autowired
     private ReserveService reservaService;
 
-    @PostMapping("book")
+    @PostMapping(path = "/book", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity crearReserva(@RequestBody Reserva reserva){
 
         try {
@@ -26,24 +28,21 @@ public class ReservaController {
             }
 
             if (reserva.getHouseId() == null || reserva.getHouseId().isEmpty() || reserva.getHouseId().equals("")) {
-                return new ResponseEntity("required property 'houseId'", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(new Mensaje(HttpStatus.BAD_REQUEST.value(), "Bad request", "required property 'houseId'"), HttpStatus.BAD_REQUEST);
             }
 
-            if (reserva.getDiscountCode().isEmpty() || reserva.getDiscountCode() == null){
-                return new ResponseEntity("invalid discount", HttpStatus.BAD_REQUEST);
-            } else {
-                reservaService.validateDiscount(reserva.getId(), reserva.getHouseId(), reserva.getDiscountCode());
+            if (reserva.getDiscountCode() == null || reserva.getDiscountCode().isEmpty() || reserva.getDiscountCode().equals("")){
+                return new ResponseEntity(new Mensaje(HttpStatus.CONFLICT.value(), "Conflict", "invalid discount"), HttpStatus.CONFLICT);
             }
 
             Reserva book = new Reserva(reserva.getId(), reserva.getName(), reserva.getLastname(), reserva.getAge(), reserva.getPhoneNumber(),
                     reserva.getStartDate(), reserva.getEndDate(), reserva.getHouseId(), reserva.getDiscountCode());
 
+            Mensaje mensaje = new Mensaje(HttpStatus.OK.value(), "Book Accepted");
             reservaService.saveReserva(book);
-            return new ResponseEntity("Book Accepted", HttpStatus.OK);
+            return new ResponseEntity(mensaje, HttpStatus.OK);
         } catch (Exception ex) {
             return new ResponseEntity(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 }
